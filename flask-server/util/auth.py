@@ -1,6 +1,6 @@
 from util.database import user_collection
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify
 
 class Register(Resource):
     
@@ -23,7 +23,9 @@ class Login(Resource):
         print("Username: ", username)
         print("Password: ", password)
 
-        return "to do", 501
+        return jsonify({"message": f"Welcome, {username}!"})
+
+        #return "to do", 501
 
 class Logout(Resource):
     
