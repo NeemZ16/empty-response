@@ -9,6 +9,7 @@ import hashlib
 import html
 from datetime import datetime, timedelta
 
+# Making Sure it doesn't update main
 salt = b'$2b$12$ZN.yq1rc10ttyUtJENwquO'
 
 class Register(Resource):
