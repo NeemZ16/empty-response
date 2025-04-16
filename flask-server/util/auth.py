@@ -10,6 +10,10 @@ class Register(Resource):
         username = data["username"]
         password = data["password"]
 
+        print("Attempting to register user below:")
+        print("Username: ", username)
+        print("Password: ", password)
+
         return "to do", 501
 class Login(Resource):
 
@@ -32,4 +36,8 @@ class Logout(Resource):
     def post(self):
         data = request.get_json()
 
-        return "to do", 501
+        print("Logging out")
+
+        return jsonify({"message": "Logout successful"})
+
+        #return "to do", 501
