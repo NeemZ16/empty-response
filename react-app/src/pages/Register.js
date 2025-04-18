@@ -23,20 +23,21 @@ const Register = () => {
     try {
       const response = await fetch('http://localhost:8000/register', {
         method: 'POST',
+        credentials: 'include', //will include any cookies that might be added later        
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
 
+      //backend returns plain text
+      const text = await response.text();   
       if (response.ok) {
-        const data = await response.json();
         setVariant('success');
-        setMessage(data.message || "Registration successful! Please log in.");
+        setMessage(text || "Registration successful! Please log in.");
         // Give user a moment to read the message, then redirect:
         setTimeout(() => navigate('/login'), 1500);
       } else {
-        const err = await response.json().catch(() => ({}));
         setVariant('danger');
-        setMessage(err.message || "Registration failed. Try again.");
+        setMessage(text || "Registration failed. Try again.");
       }
     } catch (err) {
       setVariant('danger');

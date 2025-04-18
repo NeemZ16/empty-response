@@ -18,21 +18,25 @@ const Login = ({ setUsername }) => {
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
+        credentials: 'include', //will include the auth_token cookie
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }), //might have to encrypt just sample for now
       });
 
+      
+      
       if (response.ok) {
-        const data = await response.json();
-        setMessage(data.message || "Login successful!");
+        const data = response.body; //backend returns plain text
+        setMessage(data.message);
 
         //testing phaser below
         setUsername(username);
         navigate("/");
       } else {
-        setMessage("Error during login. Please check your credentials.");
+        const err = await response.text();
+        setMessage(err || "Error during login. Please check your credentials.");
       }
     } catch (error) {
       setMessage("Error: " + error.message);

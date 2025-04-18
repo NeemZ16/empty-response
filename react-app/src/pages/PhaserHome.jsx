@@ -1,12 +1,14 @@
 import React, { useRef, useState } from 'react';
 import Phaser from 'phaser';
 import { PhaserGame } from '../phaser/PhaserGame';
-import { Link } from 'react-router-dom';  // so we can route to /login if needed
+import { Link, useNavigate } from 'react-router-dom';  // so we can route to /login if needed
 import { Button } from 'react-bootstrap'
 
 function PhaserHome({ username, setUsername }) {
   const [canMoveSprite, setCanMoveSprite] = useState(true);
   const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
+
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
 
@@ -15,21 +17,28 @@ function PhaserHome({ username, setUsername }) {
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
+        credentials: 'include', //will send the auth_token cookie so backend can clear it
+        redirect: 'manual',
       });
-      if (response.ok) { //successful logout
-        //refresh the page and reset state username
+
+
+      if (response.ok) { //backend returns plain text
+        //successful logout
+        //currently, once username is empty logout button wont show
 
         setUsername('')
 
-        //currently, once username is empty logout button wont show
-        //window.location.reload();
+        navigate('/')
 
-      } else {
-        console.warn('Logout failed')
+      } else if(response.status === 400) { //cookie deleted in backend
+        const msg = await response.text();
+
+        console.warn(msg)
+        setUsername('')
+      }else {
+        const msg = await response.text();
+
+        console.warn('Logout failed', response.status, msg);
       }
     } catch (err) {
       console.error('Logout error', err)
@@ -91,8 +100,7 @@ function PhaserHome({ username, setUsername }) {
           Else, link them to /login. 
         */}
         <div>
-          {username 
-            ?( 
+          {username ? ( 
               <>
                 <h2>Welcome, {username}!</h2>
 
@@ -100,8 +108,7 @@ function PhaserHome({ username, setUsername }) {
                   Logout Here
                 </Button>
               </>
-            )
-            :(       
+            ) : (       
               <>
                 <Link to="/login">Login Here</Link>
                 <br />
